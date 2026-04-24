@@ -1,96 +1,83 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class QuantityMeasurementAppTest {
-
-    private static final double EPSILON = 1e-6;
+public class QuantityMeasurementTest {
 
     @Test
-    void testAddition_ExplicitTargetUnit_Feet() {
+    void testEquality_KilogramToKilogram_SameValue() {
 
-        Length a = new Length(1.0, LengthUnit.FEET);
-        Length b = new Length(12.0, LengthUnit.INCHES);
+        Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+        Weight w2 = new Weight(1.0, WeightUnit.KILOGRAM);
 
-        Length result = a.add(b, LengthUnit.FEET);
-
-        assertEquals(2.0, result.getValue(), EPSILON);
+        assertTrue(w1.equals(w2));
     }
 
     @Test
-    void testAddition_ExplicitTargetUnit_Inches() {
+    void testEquality_KilogramToGram() {
 
-        Length a = new Length(1.0, LengthUnit.FEET);
-        Length b = new Length(12.0, LengthUnit.INCHES);
+        Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+        Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
 
-        Length result = a.add(b, LengthUnit.INCHES);
-
-        assertEquals(24.0, result.getValue(), EPSILON);
+        assertTrue(w1.equals(w2));
     }
 
     @Test
-    void testAddition_ExplicitTargetUnit_Yards() {
+    void testConversion_KilogramToGram() {
 
-        Length a = new Length(1.0, LengthUnit.FEET);
-        Length b = new Length(12.0, LengthUnit.INCHES);
+        Weight w = new Weight(1.0, WeightUnit.KILOGRAM);
 
-        Length result = a.add(b, LengthUnit.YARDS);
+        Weight result = w.convertTo(WeightUnit.GRAM);
 
-        assertEquals(0.666666, result.getValue(), 0.01);
+        assertEquals(1000.0, result.getValue(), 0.01);
     }
 
     @Test
-    void testAddition_ExplicitTargetUnit_Centimeters() {
+    void testConversion_PoundToKilogram() {
 
-        Length a = new Length(1.0, LengthUnit.INCHES);
-        Length b = new Length(1.0, LengthUnit.INCHES);
+        Weight w = new Weight(2.20462, WeightUnit.POUND);
 
-        Length result = a.add(b, LengthUnit.CENTIMETERS);
+        Weight result = w.convertTo(WeightUnit.KILOGRAM);
 
-        assertEquals(5.08, result.getValue(), 0.01);
+        assertEquals(1.0, result.getValue(), 0.01);
     }
 
     @Test
-    void testAddition_ExplicitTargetUnit_Commutativity() {
+    void testAddition_KilogramPlusGram() {
 
-        Length a = new Length(1.0, LengthUnit.FEET);
-        Length b = new Length(12.0, LengthUnit.INCHES);
+        Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+        Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
 
-        Length r1 = a.add(b, LengthUnit.YARDS);
-        Length r2 = b.add(a, LengthUnit.YARDS);
+        Weight result = w1.add(w2);
 
-        assertEquals(r1.getValue(), r2.getValue(), EPSILON);
+        assertEquals(2.0, result.getValue(), 0.01);
     }
 
     @Test
-    void testAddition_ExplicitTargetUnit_WithZero() {
+    void testAddition_ExplicitTargetUnit() {
 
-        Length a = new Length(5.0, LengthUnit.FEET);
-        Length b = new Length(0.0, LengthUnit.INCHES);
+        Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+        Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
 
-        Length result = a.add(b, LengthUnit.YARDS);
+        Weight result = w1.add(w2, WeightUnit.GRAM);
 
-        assertEquals(1.6666, result.getValue(), 0.01);
+        assertEquals(2000.0, result.getValue(), 0.01);
     }
 
     @Test
-    void testAddition_ExplicitTargetUnit_NegativeValues() {
+    void testEquality_NullComparison() {
 
-        Length a = new Length(5.0, LengthUnit.FEET);
-        Length b = new Length(-2.0, LengthUnit.FEET);
+        Weight w = new Weight(1.0, WeightUnit.KILOGRAM);
 
-        Length result = a.add(b, LengthUnit.INCHES);
-
-        assertEquals(36.0, result.getValue(), EPSILON);
+        assertFalse(w.equals(null));
     }
 
     @Test
-    void testAddition_ExplicitTargetUnit_NullTargetUnit() {
+    void testZeroValueEquality() {
 
-        Length a = new Length(1.0, LengthUnit.FEET);
-        Length b = new Length(12.0, LengthUnit.INCHES);
+        Weight w1 = new Weight(0.0, WeightUnit.KILOGRAM);
+        Weight w2 = new Weight(0.0, WeightUnit.GRAM);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            a.add(b, null);
-        });
+        assertTrue(w1.equals(w2));
     }
+
 }

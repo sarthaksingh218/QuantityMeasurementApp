@@ -1,40 +1,35 @@
 public class QuantityMeasurementApp {
 
-    public static double convert(double value, LengthUnit source, LengthUnit target) {
-
-        if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException();
-        }
-
-        if (source == null || target == null) {
-            throw new IllegalArgumentException();
-        }
-
-        double baseValue = source.convertToBaseUnit(value);
-
-        return target.convertFromBaseUnit(baseValue);
+    public static boolean demonstrateWeightEquality(Weight w1, Weight w2) {
+        return w1.equals(w2);
     }
 
-    public static Length add(Length l1, Length l2) {
-        return l1.add(l2);
+    public static Weight demonstrateWeightConversion(double value, WeightUnit from, WeightUnit to) {
+        return new Weight(value, from).convertTo(to);
     }
 
-    public static Length add(Length l1, Length l2, LengthUnit targetUnit) {
-        return l1.add(l2, targetUnit);
+    public static Weight demonstrateWeightAddition(double v1, WeightUnit u1,
+                                                   double v2, WeightUnit u2) {
+
+        Weight w1 = new Weight(v1, u1);
+        Weight w2 = new Weight(v2, u2);
+
+        return w1.add(w2);
     }
 
     public static void main(String[] args) {
 
-        Length a = new Length(1.0, LengthUnit.FEET);
-        Length b = new Length(12.0, LengthUnit.INCHES);
+        Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+        Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
 
-        System.out.println(add(a, b, LengthUnit.FEET));
-        System.out.println(add(a, b, LengthUnit.INCHES));
-        System.out.println(add(a, b, LengthUnit.YARDS));
+        System.out.println(demonstrateWeightEquality(w1, w2));
 
-        Length c = new Length(36.0, LengthUnit.INCHES);
-        Length d = new Length(1.0, LengthUnit.YARDS);
+        Weight converted = demonstrateWeightConversion(2.0, WeightUnit.POUND, WeightUnit.KILOGRAM);
+        System.out.println(converted);
 
-        System.out.println(add(c, d, LengthUnit.FEET));
+        Weight sum = demonstrateWeightAddition(1.0, WeightUnit.KILOGRAM,
+                1000.0, WeightUnit.GRAM);
+
+        System.out.println(sum);
     }
 }
