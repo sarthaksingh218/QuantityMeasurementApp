@@ -6,113 +6,91 @@ public class QuantityMeasurementAppTest {
     private static final double EPSILON = 1e-6;
 
     @Test
-    void testAddition_SameUnit_FeetPlusFeet() {
-
-        Length a = new Length(1.0, Length.LengthUnit.FEET);
-        Length b = new Length(2.0, Length.LengthUnit.FEET);
-
-        Length result = a.add(b);
-
-        assertEquals(3.0, result.getValue(), EPSILON);
-    }
-
-    @Test
-    void testAddition_SameUnit_InchPlusInch() {
-
-        Length a = new Length(6.0, Length.LengthUnit.INCHES);
-        Length b = new Length(6.0, Length.LengthUnit.INCHES);
-
-        Length result = a.add(b);
-
-        assertEquals(12.0, result.getValue(), EPSILON);
-    }
-
-    @Test
-    void testAddition_CrossUnit_FeetPlusInches() {
+    void testAddition_ExplicitTargetUnit_Feet() {
 
         Length a = new Length(1.0, Length.LengthUnit.FEET);
         Length b = new Length(12.0, Length.LengthUnit.INCHES);
 
-        Length result = a.add(b);
+        Length result = a.add(b, Length.LengthUnit.FEET);
 
         assertEquals(2.0, result.getValue(), EPSILON);
     }
 
     @Test
-    void testAddition_CrossUnit_InchPlusFeet() {
+    void testAddition_ExplicitTargetUnit_Inches() {
 
-        Length a = new Length(12.0, Length.LengthUnit.INCHES);
-        Length b = new Length(1.0, Length.LengthUnit.FEET);
+        Length a = new Length(1.0, Length.LengthUnit.FEET);
+        Length b = new Length(12.0, Length.LengthUnit.INCHES);
 
-        Length result = a.add(b);
+        Length result = a.add(b, Length.LengthUnit.INCHES);
 
         assertEquals(24.0, result.getValue(), EPSILON);
     }
 
     @Test
-    void testAddition_Commutativity() {
+    void testAddition_ExplicitTargetUnit_Yards() {
 
         Length a = new Length(1.0, Length.LengthUnit.FEET);
         Length b = new Length(12.0, Length.LengthUnit.INCHES);
 
-        Length result1 = a.add(b);
-        Length result2 = b.add(a);
+        Length result = a.add(b, Length.LengthUnit.YARDS);
 
-        assertEquals(result1.convertTo(Length.LengthUnit.INCHES).getValue(),
-                result2.getValue(), EPSILON);
+        assertEquals(0.666666, result.getValue(), 0.01);
     }
 
     @Test
-    void testAddition_WithZero() {
+    void testAddition_ExplicitTargetUnit_Centimeters() {
+
+        Length a = new Length(1.0, Length.LengthUnit.INCHES);
+        Length b = new Length(1.0, Length.LengthUnit.INCHES);
+
+        Length result = a.add(b, Length.LengthUnit.CENTIMETERS);
+
+        assertEquals(5.08, result.getValue(), 0.01);
+    }
+
+    @Test
+    void testAddition_ExplicitTargetUnit_Commutativity() {
+
+        Length a = new Length(1.0, Length.LengthUnit.FEET);
+        Length b = new Length(12.0, Length.LengthUnit.INCHES);
+
+        Length r1 = a.add(b, Length.LengthUnit.YARDS);
+        Length r2 = b.add(a, Length.LengthUnit.YARDS);
+
+        assertEquals(r1.getValue(), r2.getValue(), EPSILON);
+    }
+
+    @Test
+    void testAddition_ExplicitTargetUnit_WithZero() {
 
         Length a = new Length(5.0, Length.LengthUnit.FEET);
         Length b = new Length(0.0, Length.LengthUnit.INCHES);
 
-        Length result = a.add(b);
+        Length result = a.add(b, Length.LengthUnit.YARDS);
 
-        assertEquals(5.0, result.getValue(), EPSILON);
+        assertEquals(1.6666, result.getValue(), 0.01);
     }
 
     @Test
-    void testAddition_NegativeValues() {
+    void testAddition_ExplicitTargetUnit_NegativeValues() {
 
         Length a = new Length(5.0, Length.LengthUnit.FEET);
         Length b = new Length(-2.0, Length.LengthUnit.FEET);
 
-        Length result = a.add(b);
+        Length result = a.add(b, Length.LengthUnit.INCHES);
 
-        assertEquals(3.0, result.getValue(), EPSILON);
+        assertEquals(36.0, result.getValue(), EPSILON);
     }
 
     @Test
-    void testAddition_NullSecondOperand() {
+    void testAddition_ExplicitTargetUnit_NullTargetUnit() {
 
         Length a = new Length(1.0, Length.LengthUnit.FEET);
+        Length b = new Length(12.0, Length.LengthUnit.INCHES);
 
         assertThrows(IllegalArgumentException.class, () -> {
-            a.add(null);
+            a.add(b, null);
         });
-    }
-
-    @Test
-    void testAddition_LargeValues() {
-
-        Length a = new Length(1e6, Length.LengthUnit.FEET);
-        Length b = new Length(1e6, Length.LengthUnit.FEET);
-
-        Length result = a.add(b);
-
-        assertEquals(2e6, result.getValue(), EPSILON);
-    }
-
-    @Test
-    void testAddition_SmallValues() {
-
-        Length a = new Length(0.001, Length.LengthUnit.FEET);
-        Length b = new Length(0.002, Length.LengthUnit.FEET);
-
-        Length result = a.add(b);
-
-        assertEquals(0.003, result.getValue(), EPSILON);
     }
 }

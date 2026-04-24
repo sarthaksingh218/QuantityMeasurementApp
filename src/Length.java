@@ -48,12 +48,9 @@ public class Length {
     }
 
     public Length convertTo(LengthUnit targetUnit) {
+
         if (targetUnit == null) {
             throw new IllegalArgumentException();
-        }
-
-        if (this.unit == targetUnit) {
-            return this;
         }
 
         double baseValue = toBaseUnit();
@@ -62,20 +59,32 @@ public class Length {
         return new Length(converted, targetUnit);
     }
 
+    // UC6 Addition (result in first operand unit)
     public Length add(Length other) {
 
         if (other == null) {
             throw new IllegalArgumentException();
         }
 
-        double thisBase = this.toBaseUnit();
-        double otherBase = other.toBaseUnit();
-
-        double sumBase = thisBase + otherBase;
+        double sumBase = this.toBaseUnit() + other.toBaseUnit();
 
         double result = sumBase / this.unit.getFactor();
 
         return new Length(result, this.unit);
+    }
+
+    // UC7 Addition with explicit target unit
+    public Length add(Length other, LengthUnit targetUnit) {
+
+        if (other == null || targetUnit == null) {
+            throw new IllegalArgumentException();
+        }
+
+        double sumBase = this.toBaseUnit() + other.toBaseUnit();
+
+        double result = sumBase / targetUnit.getFactor();
+
+        return new Length(result, targetUnit);
     }
 
     private boolean compare(Length other) {
@@ -85,13 +94,13 @@ public class Length {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object obj) {
 
-        if (this == o) return true;
+        if (this == obj) return true;
 
-        if (!(o instanceof Length)) return false;
+        if (!(obj instanceof Length)) return false;
 
-        Length other = (Length) o;
+        Length other = (Length) obj;
 
         return compare(other);
     }

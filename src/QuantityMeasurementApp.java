@@ -10,11 +10,8 @@ public class QuantityMeasurementApp {
             throw new IllegalArgumentException();
         }
 
-        if (source == target) {
-            return value;
-        }
-
         double baseValue = value * source.getFactor();
+
         return baseValue / target.getFactor();
     }
 
@@ -22,13 +19,8 @@ public class QuantityMeasurementApp {
         return l1.add(l2);
     }
 
-    public static Length add(double v1, Length.LengthUnit u1,
-                             double v2, Length.LengthUnit u2) {
-
-        Length l1 = new Length(v1, u1);
-        Length l2 = new Length(v2, u2);
-
-        return l1.add(l2);
+    public static Length add(Length l1, Length l2, Length.LengthUnit targetUnit) {
+        return l1.add(l2, targetUnit);
     }
 
     public static void main(String[] args) {
@@ -36,15 +28,13 @@ public class QuantityMeasurementApp {
         Length a = new Length(1.0, Length.LengthUnit.FEET);
         Length b = new Length(12.0, Length.LengthUnit.INCHES);
 
-        Length result = add(a, b);
+        System.out.println(add(a, b, Length.LengthUnit.FEET));
+        System.out.println(add(a, b, Length.LengthUnit.INCHES));
+        System.out.println(add(a, b, Length.LengthUnit.YARDS));
 
-        System.out.println(result);
+        Length c = new Length(36.0, Length.LengthUnit.INCHES);
+        Length d = new Length(1.0, Length.LengthUnit.YARDS);
 
-        System.out.println(add(
-                1.0,
-                Length.LengthUnit.YARDS,
-                3.0,
-                Length.LengthUnit.FEET
-        ));
+        System.out.println(add(c, d, Length.LengthUnit.FEET));
     }
 }
