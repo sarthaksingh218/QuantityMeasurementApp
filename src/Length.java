@@ -5,24 +5,8 @@ public class Length {
 
     private static final double EPSILON = 1e-6;
 
-    public enum LengthUnit {
-        INCHES(1.0),
-        FEET(12.0),
-        YARDS(36.0),
-        CENTIMETERS(0.393701);
-
-        private final double factor;
-
-        LengthUnit(double factor) {
-            this.factor = factor;
-        }
-
-        public double getFactor() {
-            return factor;
-        }
-    }
-
     public Length(double value, LengthUnit unit) {
+
         if (!Double.isFinite(value)) {
             throw new IllegalArgumentException();
         }
@@ -44,7 +28,7 @@ public class Length {
     }
 
     private double toBaseUnit() {
-        return value * unit.getFactor();
+        return unit.convertToBaseUnit(value);
     }
 
     public Length convertTo(LengthUnit targetUnit) {
@@ -54,7 +38,7 @@ public class Length {
         }
 
         double baseValue = toBaseUnit();
-        double converted = baseValue / targetUnit.getFactor();
+        double converted = targetUnit.convertFromBaseUnit(baseValue);
 
         return new Length(converted, targetUnit);
     }
@@ -68,7 +52,7 @@ public class Length {
 
         double sumBase = this.toBaseUnit() + other.toBaseUnit();
 
-        double result = sumBase / this.unit.getFactor();
+        double result = this.unit.convertFromBaseUnit(sumBase);
 
         return new Length(result, this.unit);
     }
@@ -82,7 +66,7 @@ public class Length {
 
         double sumBase = this.toBaseUnit() + other.toBaseUnit();
 
-        double result = sumBase / targetUnit.getFactor();
+        double result = targetUnit.convertFromBaseUnit(sumBase);
 
         return new Length(result, targetUnit);
     }
