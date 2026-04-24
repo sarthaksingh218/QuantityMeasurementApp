@@ -1,61 +1,83 @@
-class Length {
+public class Length {
 
-    private double value;
-    private LengthUnit unit;
+    private final double value;
+    private final LengthUnit unit;
+
+    private static final double EPSILON = 1e-6;
 
     public enum LengthUnit {
-        FEET(12.0),
         INCHES(1.0),
+        FEET(12.0),
         YARDS(36.0),
         CENTIMETERS(0.393701);
 
-        private final double conversionFactor;
+        private final double factor;
 
-        LengthUnit(double conversionFactor) {
-            this.conversionFactor = conversionFactor;
+        LengthUnit(double factor) {
+            this.factor = factor;
         }
 
-        public double getConversionFactor() {
-            return conversionFactor;
+        public double getFactor() {
+            return factor;
         }
     }
 
     public Length(double value, LengthUnit unit) {
-        if (unit == null) throw new IllegalArgumentException("Unit cannot be null");
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException("Invalid value");
+        }
+        if (unit == null) {
+            throw new IllegalArgumentException("Unit cannot be null");
+        }
+
         this.value = value;
         this.unit = unit;
     }
 
-    private double convertToBaseUnit() {
-        return Math.round(this.value * this.unit.getConversionFactor() * 100.0) / 100.0;
+    public double getValue() {
+        return value;
     }
 
-    public boolean compare(Length thatLength) {
-        if (thatLength == null) return false;
-        return Double.compare(this.convertToBaseUnit(),
-                thatLength.convertToBaseUnit()) == 0;
+    public LengthUnit getUnit() {
+        return unit;
+    }
+
+    private double toBaseUnit() {
+        return value * unit.getFactor();
+    }
+
+    public Length convertTo(LengthUnit targetUnit) {
+        if (targetUnit == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+
+        if (this.unit == targetUnit) {
+            return this;
+        }
+
+        double baseValue = toBaseUnit();
+        double convertedValue = baseValue / targetUnit.getFactor();
+
+        return new Length(convertedValue, targetUnit);
+    }
+
+    private boolean compare(Length other) {
+        double thisBase = this.toBaseUnit();
+        double otherBase = other.toBaseUnit();
+        return Math.abs(thisBase - otherBase) < EPSILON;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Length that = (Length) o;
-        return compare(that);
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Length)) return false;
+
+        Length other = (Length) obj;
+        return compare(other);
     }
 
-    public static void main(String[] args) {
-
-        Length length1 = new Length(1.0, LengthUnit.FEET);
-        Length length2 = new Length(12.0, LengthUnit.INCHES);
-        System.out.println("Are lengths equal? " + length1.equals(length2));
-
-        Length length3 = new Length(1.0, LengthUnit.YARDS);
-        Length length4 = new Length(36.0, LengthUnit.INCHES);
-        System.out.println("Are lengths equal? " + length3.equals(length4));
-
-        Length length5 = new Length(100.0, LengthUnit.CENTIMETERS);
-        Length length6 = new Length(39.3701, LengthUnit.INCHES);
-        System.out.println("Are lengths equal? " + length5.equals(length6));
+    @Override
+    public String toString() {
+        return String.format("%.2f %s", value, unit);
     }
 }
